@@ -1,0 +1,105 @@
+@import "tailwindcss";
+
+:root {
+  /* Default variables (Light Mode) */
+  --color-primary: #0d9488;
+  --color-primary-hover: #0f766e;
+  --color-secondary: #ec4899;
+
+  --font-family-sans: "Inter", "system-ui", "sans-serif";
+  
+  --color-bg: #f8fafc;
+  --color-text: #334155;
+  --color-text-strong: #0f172a;
+  --color-text-muted: #64748b;
+
+  --color-bg-component: #ffffff;
+  --color-bg-component-subtle: #e2e8f0;
+
+  --color-border: #cbd5e1;
+  --color-border-subtle: #e2e8f0;
+
+  --color-radial-gradient: 22, 107, 107; /* teal-700 rgb */
+}
+
+html.dark {
+  /* Dark Mode Overrides */
+  --color-primary: #14b8a6;
+  --color-primary-hover: #0d9488;
+  
+  --color-bg: #0f172a;
+  --color-text: #cbd5e1;
+  --color-text-strong: #ffffff;
+  --color-text-muted: #94a3b8;
+
+  --color-bg-component: #1e293b;
+  --color-bg-component-subtle: #334155;
+
+  --color-border: #334155;
+  --color-border-subtle: #1e293b;
+  
+  --color-radial-gradient: 22, 163, 164; /* teal-500 rgb */
+}
+
+
+@layer base {
+  html {
+    font-family: var(--font-family-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+  }
+
+  body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 50vh;
+    background: radial-gradient(circle, rgba(var(--color-radial-gradient), 0.1), transparent 70%);
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  *, ::before, ::after {
+    border-color: var(--color-border);
+  }
+
+  /* Form inputs that adapt to the theme */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="tel"],
+  input[type="number"],
+  select,
+  textarea /* UPDATED: Added textarea here */
+  {
+    @apply w-full rounded-md border-0 bg-[var(--color-bg-component-subtle)] py-2.5 px-3 text-[var(--color-text-strong)] ring-1 ring-inset ring-[var(--color-border)] placeholder:text-[var(--color-text-muted)] focus:ring-2 focus:ring-inset focus:ring-[var(--color-primary)] sm:text-sm transition-shadow duration-200;
+    /* NEW: Add a subtle glow on focus */
+    &:focus {
+      box-shadow: 0 0 0 3px rgba(var(--color-radial-gradient), 0.3);
+    }
+  }
+}
+
+@layer components {
+  .btn {
+    /* UPDATED: Added active state and transition */
+    @apply inline-flex items-center justify-center rounded-md px-5 py-2.5 text-sm font-semibold shadow-sm transition-all duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[var(--color-bg)] active:scale-95;
+  }
+
+  .btn-primary {
+    /* UPDATED: Tweaked shadow for a better hover effect */
+    @apply bg-gradient-to-br from-[var(--color-primary)] to-cyan-500 text-white shadow-[var(--color-primary)]/20 shadow-md hover:-translate-y-px hover:shadow-lg hover:shadow-[var(--color-primary)]/40 focus:ring-cyan-500;
+  }
+
+  .btn-secondary {
+    @apply border-2 border-[var(--color-border)] bg-transparent text-[var(--color-text)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] focus:ring-[var(--color-primary)];
+  }
+  
+  .btn-subtle {
+    @apply bg-[var(--color-bg-component-subtle)] px-4 text-[var(--color-text)] hover:bg-[var(--color-border)] focus:ring-[var(--color-text-muted)];
+  }
+}
