@@ -18,6 +18,7 @@ export const AuthProvider = ({ children }) => {
         } catch (error) {
             console.error("Error loading user session from localStorage:", error);
             localStorage.removeItem('user');
+            localStorage.removeItem('accessToken');
         } finally {
             setLoading(false);
         }
@@ -27,20 +28,26 @@ export const AuthProvider = ({ children }) => {
         try {
             const response = await api.post('/users/login', { email, password });
             if (response.data.success) {
-                const { user: userData } = response.data.data;
+                // Extract accessToken along with user data
+                const { user: userData, accessToken } = response.data.data;
+                
+                // Save accessToken to localStorage for Axios Interceptor
+                if (accessToken) {
+                    localStorage.setItem('accessToken', accessToken);
+                }
                 localStorage.setItem('user', JSON.stringify(userData));
+                
                 setUser(userData);
                 return userData;
             }
         } catch (error) {
             console.error("Login failed:", error);
-            throw error; // Re-throw to be caught in the component
+            throw error;
         }
     };
     
     const register = async (userData) => {
         try {
-            // For user registration, we send JSON
             const response = await api.post('/users/register', userData);
             return response.data;
         } catch (error) {
@@ -51,7 +58,6 @@ export const AuthProvider = ({ children }) => {
     
     const registerWorker = async (formData) => {
         try {
-            // For worker registration with file uploads, we send FormData
             const response = await api.post('/users/register', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data',
@@ -65,7 +71,6 @@ export const AuthProvider = ({ children }) => {
     }
 
     const updateUser = (newUserData) => {
-        // This function will be called after a successful profile update
         setUser(newUserData);
         localStorage.setItem('user', JSON.stringify(newUserData));
     };
@@ -78,7 +83,7 @@ export const AuthProvider = ({ children }) => {
         } finally {
             setUser(null);
             localStorage.removeItem('user');
-            // Redirect to home after logout
+            localStorage.removeItem('accessToken'); // Clear token on logout
             navigate('/');
         }
     };
@@ -90,7 +95,7 @@ export const AuthProvider = ({ children }) => {
         register,
         registerWorker,
         logout,
-        updateUser, // Export the new function
+        updateUser,
     };
 
     return (
